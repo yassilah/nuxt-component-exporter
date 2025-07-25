@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, addServerHandler, addComponent, resolveModule, addImports, installModule } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, addServerHandler, addComponent, resolveModule, addImports } from '@nuxt/kit'
 import { join } from 'node:path'
 
 export interface ModuleOptions {
@@ -47,7 +47,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias['#nitro-renderer'] = path
 
     if (options.useExternalChromium) {
-      await installModule('@sparticuz/chromium')
+      const { addDependency } = await import('nypm')
+      await addDependency('@sparticuz/chromium')
     }
 
     nuxt.options.runtimeConfig.componentExporter = {
