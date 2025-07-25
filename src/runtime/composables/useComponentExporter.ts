@@ -1,6 +1,7 @@
 import { type GlobalComponents, ref, type AllowedComponentProps, type VNodeProps } from 'vue'
 import { useRuntimeConfig } from 'nuxt/app'
 import type { ExportFormat } from '../../types'
+import { defu } from 'defu'
 
 type ComponentProps<C extends string> = C extends keyof GlobalComponents
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,13 +27,13 @@ export function useComponentExporter() {
   /**
    * Exports the component as an image.
    */
-  async function getComponentImageData<C extends string>(component: C, props: ComponentProps<C>, format: ExportFormat) {
+  async function getComponentImageData<C extends string>(component: C, options: DownloadOptions<C>) {
     return $fetch(componentExporter.endpoint, {
       method: 'POST',
       body: {
         component,
-        format,
-        props,
+        format: options.format,
+        props: options.props,
       },
     }) as Promise<Blob>
   }
@@ -40,11 +41,11 @@ export function useComponentExporter() {
   /**
    * Click on a fake link.
    */
-  function startDownload(href: string, filename: string) {
+  function startDownload<C extends string>(data: Blob, options: DownloadOptions<C>) {
     const link = document.createElement('a')
     link.style.display = 'none'
-    link.href = href
-    link.download = filename
+    link.href = URL.createObjectURL(data)
+    link.download = options.filename
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -53,11 +54,19 @@ export function useComponentExporter() {
   /**
    * Download the component as an image.
    */
-  async function download<C extends string>(component: C, props: ComponentProps<C>, filename = 'export', format: ExportFormat = 'png') {
+  async function download<C extends string>(component: C, _options: Partial<DownloadOptions<C>> = {}) {
     try {
       loading.value = true
-      const data = await getComponentImageData(component, props, format)
-      startDownload(URL.createObjectURL(data), `${filename}.${format}`)
+
+      const options = defu(_options, {
+        props: {},
+        filename: `${component}.${_options.format || 'png'}`,
+        format: 'png',
+      } satisfies DownloadOptions<C>)
+
+      const data = await getComponentImageData(component, options)
+
+      startDownload(data, options)
     }
     catch (error) {
       console.error('Download failed:', error)
@@ -72,4 +81,10 @@ export function useComponentExporter() {
     getComponentImageData,
     download,
   }
+}
+
+export type DownloadOptions<C extends string> = {
+  props: ComponentProps<C> | Record<string, unknown>
+  filename: string
+  format: ExportFormat
 }
