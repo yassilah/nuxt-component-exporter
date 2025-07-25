@@ -5,7 +5,10 @@ export interface ModuleOptions {
   endpoint?: string
   enabled?: boolean
   useExternalChromium?: boolean
+  islandComponent?: string
 }
+
+const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -18,8 +21,6 @@ export default defineNuxtModule<ModuleOptions>({
     useExternalChromium: false,
   }),
   async setup(options, nuxt) {
-    const { resolve } = createResolver(import.meta.url)
-
     addServerHandler({
       handler: resolve('./runtime/server/handler'),
       route: options.endpoint,
@@ -34,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
     addComponent({
       island: true,
       name: 'ComponentExporter',
-      filePath: resolve('./runtime/components/component-exporter.vue'),
+      filePath: options.islandComponent || resolve('./runtime/components/component-exporter.vue'),
     })
 
     // Temporary workaround

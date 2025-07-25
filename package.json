@@ -1,15 +1,11 @@
 {
   "name": "@yassidev/nuxt-component-exporter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Nuxt module to export components as images",
   "repository": "yassilah/nuxt-component-exporter",
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./nitro": {
-      "types": "./node_modules/nuxt/dist/core/runtime/nitro/utils/*.d.ts",
-      "import": "./node_modules/nuxt/dist/core/runtime/nitro/utils/*.js"
-    },
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"

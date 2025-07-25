@@ -48,8 +48,9 @@ export async function getComponentHtml(event: H3Event, component: string, props:
  * Fetches the Nuxt island component with the given name and props.
  */
 function fetchIsland(event: H3Event, props: Record<string, unknown>): Promise<NuxtIslandResponse> {
-  const hashId = hash(['ComponentExporter', props]).replaceAll('_', '-')
-  return event.$fetch<NuxtIslandResponse>(`/__nuxt_island/ComponentExporter_${hashId}.json`, {
+  const islandComponent = 'ComponentExporter'
+  const hashId = hash([islandComponent, props]).replaceAll('_', '-')
+  return event.$fetch<NuxtIslandResponse>(`/__nuxt_island/${islandComponent}_${hashId}.json`, {
     params: {
       props: JSON.stringify(props),
     },

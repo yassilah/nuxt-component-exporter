@@ -1,5 +1,5 @@
 import { type GlobalComponents, ref, type AllowedComponentProps, type VNodeProps } from 'vue'
-import { useRuntimeConfig } from 'nuxt/app'
+import { useNuxtApp, useRuntimeConfig } from 'nuxt/app'
 import type { ExportFormat } from '../../types'
 import { defu } from 'defu'
 
@@ -25,9 +25,17 @@ export function useComponentExporter() {
   const { componentExporter } = useRuntimeConfig().public
 
   /**
+   * Checks if a component is registered globally.
+   */
+  function isRegisteredGlobally<C extends keyof GlobalComponents>(component: C): component is C {
+    return Object.keys(useNuxtApp().vueApp._context.components).includes(component)
+  }
+
+  /**
    * Exports the component as an image.
    */
-  async function getComponentImageData<C extends string>(component: C, options: DownloadOptions<C>) {
+  async function getComponentImageData<C extends keyof GlobalComponents>(component: C, options: DownloadOptions<C>) {
+    if (!isRegisteredGlobally(component)) throw new Error(`Component "${component}" is not registered globally.`)
     return $fetch(componentExporter.endpoint, {
       method: 'POST',
       body: {
@@ -41,7 +49,7 @@ export function useComponentExporter() {
   /**
    * Click on a fake link.
    */
-  function startDownload<C extends string>(data: Blob, options: DownloadOptions<C>) {
+  function startDownload<C extends keyof GlobalComponents>(data: Blob, options: DownloadOptions<C>) {
     const link = document.createElement('a')
     link.style.display = 'none'
     link.href = URL.createObjectURL(data)
@@ -54,7 +62,7 @@ export function useComponentExporter() {
   /**
    * Download the component as an image.
    */
-  async function download<C extends string>(component: C, _options: Partial<DownloadOptions<C>> = {}) {
+  async function download<C extends keyof GlobalComponents>(component: C, _options: Partial<DownloadOptions<C>> = {}) {
     try {
       loading.value = true
 
@@ -83,7 +91,7 @@ export function useComponentExporter() {
   }
 }
 
-export type DownloadOptions<C extends string> = {
+export type DownloadOptions<C extends keyof GlobalComponents> = {
   props: ComponentProps<C> | Record<string, unknown>
   filename: string
   format: ExportFormat
