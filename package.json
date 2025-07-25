@@ -1,6 +1,6 @@
 {
   "name": "@yassidev/nuxt-component-exporter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Nuxt module to export components as images",
   "repository": "yassilah/nuxt-component-exporter",
   "license": "MIT",

@@ -16,7 +16,5 @@ const { download, loading: exporting } = useComponentExporter()
     <NuxtLink to="/other">
       Go to other
     </NuxtLink>
-
-    <Machin />
   </div>
 </template>

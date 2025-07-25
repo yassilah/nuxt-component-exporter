@@ -31,8 +31,6 @@ export default defineNuxtModule<ModuleOptions>({
       from: resolve('./runtime/composables/useComponentExporter'),
     })
 
-    nuxt.options.experimental.componentIslands ??= true
-
     addComponent({
       island: true,
       name: 'ComponentExporter',
@@ -45,6 +43,10 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias ??= {}
     nuxt.options.alias['#nitro-renderer'] = path
     nuxt.options.nitro.alias['#nitro-renderer'] = path
+
+    if (nuxt.options.experimental.componentIslands === 'auto') {
+      nuxt.options.experimental.componentIslands = true
+    }
 
     if (options.useExternalChromium) {
       const { addDependency } = await import('nypm')
