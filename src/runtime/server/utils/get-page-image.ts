@@ -43,7 +43,7 @@ async function getComponentImage(page: Page, type: ExportFormat) {
  */
 async function createNewPage() {
   const { componentExporter } = useRuntimeConfig()
-  const chromium = componentExporter.useExternalChromium ? await import('@sparticuz/chromium').then(m => m.default) : undefined
+  const chromium = componentExporter.useExternalChromium ? await import(/* @vite-ignore */ '@sparticuz/chromium').then(m => m.default) : undefined
 
   const browser = await puppeteer.launch({
     defaultViewport: {
